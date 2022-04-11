@@ -1,4 +1,4 @@
-package qa.concurrency.laboratory;
+package qa.concurrency.laboratory.model;
 
 import lombok.Getter;
 import lombok.Setter;

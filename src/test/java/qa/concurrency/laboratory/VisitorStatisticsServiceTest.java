@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import qa.concurrency.laboratory.model.UserVisitMap;
+import qa.concurrency.laboratory.repository.VisitorStatisticsRepository;
+import qa.concurrency.laboratory.service.VisitorStatisticServiceImpl;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -15,11 +18,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class VisitorStatisticsServiceTest {
-    private VisitorStatisticsService visitorStatisticsService;
+    private VisitorStatisticServiceImpl visitorStatisticsService;
+    private VisitorStatisticsRepository visitorStatisticsRepository;
 
     @BeforeEach
     void setUp() {
-        visitorStatisticsService = new VisitorStatisticsService();
+        visitorStatisticsService = new VisitorStatisticServiceImpl(visitorStatisticsRepository);
     }
 
     @Test

@@ -1,0 +1,8 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    background-image: url(/img/back.jpg);
+    background-size: 1500px 870px;
+}
