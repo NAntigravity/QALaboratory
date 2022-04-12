@@ -11,13 +11,13 @@ import java.util.stream.StreamSupport;
 @Service
 @Transactional
 public class VisitorStatisticServiceImpl implements VisitorStatisticService {
-    private final VisitorStatisticsRepository visitorStatisticsRepository;
+    private VisitorStatisticsRepository visitorStatisticsRepository;
 
     public VisitorStatisticServiceImpl(VisitorStatisticsRepository visitorStatisticsRepository) {
         this.visitorStatisticsRepository = visitorStatisticsRepository;
     }
 
-    public void visit(String name) {
+    public synchronized void visit(String name) {
         Optional<User> user = visitorStatisticsRepository.findById(name);
         if (user.isEmpty()) {
             visitorStatisticsRepository.save(new User(name));
@@ -32,8 +32,8 @@ public class VisitorStatisticServiceImpl implements VisitorStatisticService {
         Iterable<User> allUsers = visitorStatisticsRepository.findAll();
         return StreamSupport
                 .stream(allUsers.spliterator(), false)
-                    .map(x->x.visitsAmount)
-                    .reduce(0, Integer::sum);
+                .map(x -> x.visitsAmount)
+                .reduce(0, Integer::sum);
     }
 
     public long visitsBy(String name) {

@@ -4,6 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 import qa.concurrency.laboratory.model.UserVisitMap;
 import qa.concurrency.laboratory.repository.VisitorStatisticsRepository;
 import qa.concurrency.laboratory.service.VisitorStatisticServiceImpl;
@@ -17,9 +22,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes=QaLaboratoryApplication.class)
+@Transactional
 class VisitorStatisticsServiceTest {
-    private VisitorStatisticServiceImpl visitorStatisticsService;
+    @Autowired
     private VisitorStatisticsRepository visitorStatisticsRepository;
+    private VisitorStatisticServiceImpl visitorStatisticsService;
 
     @BeforeEach
     void setUp() {
@@ -27,40 +36,27 @@ class VisitorStatisticsServiceTest {
     }
 
     @Test
-    void visitSingleUserTotalVisits() {
-        String userName = "Forever Alone";
-        visitorStatisticsService.visit(userName);
-        assertEquals(visitorStatisticsService.totalVisits(), 1L);
-    }
-
-    @Test
     void visitSingleUserVisitBy() {
         String userName = "Forever Alone";
         visitorStatisticsService.visit(userName);
-        assertEquals(visitorStatisticsService.visitsBy(userName), 1L);
+        assertEquals(1L, visitorStatisticsService.visitsBy(userName));
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 3, 5, 15, 1000})
-    void handlingConcurrencyInTotalVisits(int visitorsAmount) throws InterruptedException {
-        ExecutorService service = Executors.newFixedThreadPool(10);
-        CountDownLatch latch = new CountDownLatch(visitorsAmount);
+    void testTotalVisits(int visitorsAmount) {
         for (int i = 0; i < visitorsAmount; i++) {
-            service.submit(() -> {
-                visitorStatisticsService.visit("Concurrent User");
-                latch.countDown();
-            });
+            visitorStatisticsService.visit("User");
         }
-        latch.await();
         assertEquals(visitorsAmount, visitorStatisticsService.totalVisits());
     }
 
     @Test
     void trackingUsers() throws InterruptedException {
         List<UserVisitMap> visitUserMaps = new LinkedList<>();
-        visitUserMaps.add(new UserVisitMap("Gandalf", 12));
-        visitUserMaps.add(new UserVisitMap("Frodo", 21));
-        visitUserMaps.add(new UserVisitMap("Sauron", 4));
+        visitUserMaps.add(new UserVisitMap("Gandalf", 120));
+        visitUserMaps.add(new UserVisitMap("Frodo", 210));
+        visitUserMaps.add(new UserVisitMap("Sauron", 40));
 
         AtomicReference<Integer> totalVisits = new AtomicReference<>(0);
         visitUserMaps.forEach(x -> totalVisits.updateAndGet(v -> v + x.visitsAmount));
