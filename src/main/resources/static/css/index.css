@@ -3,6 +3,6 @@ html, body {
 }
 
 body {
-    background-image: url(/img/back.jpg);
     background-size: 1500px 870px;
+    background-image: url("/img/back.jpg");
 }

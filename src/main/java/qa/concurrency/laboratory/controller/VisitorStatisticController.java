@@ -26,7 +26,7 @@ public class VisitorStatisticController {
     }
 
     @PostMapping("/visit")
-    public String userVisit(@ModelAttribute @NotNull User user, Model model) {
+    public String userVisit(@ModelAttribute @NotNull User user) {
         visitorStatisticsService.visit(user.getUserName());
         return "visit";
     }
