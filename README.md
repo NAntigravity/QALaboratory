@@ -8,3 +8,5 @@ Spring Boot + JUnit5
 
 ## Testing
 Unit tests for visitor statistic service are <a href="src/test/java/qa/concurrency/laboratory/VisitorStatisticsServiceTest.java">here</a>
+
+For e2e testing use <a href="https://github.com/NAntigravity/QALabE2E">this app</a>
